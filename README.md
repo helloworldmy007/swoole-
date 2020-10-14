@@ -11,7 +11,7 @@ Extension：Swoole,Redis。
 
 2.进入目录，编辑 server.php：
 vim server.php
-2.1:根据里面的提示修改，改完之后保存，然后运行 server.php
+2.1:根据里面的提示修改，改完之后保存，然后运行 server.php 。
 php server.php
 推荐使用 screen 或者 nohup 让服务器端在后台运行，断开 SSH 之后也不会关闭。
 
