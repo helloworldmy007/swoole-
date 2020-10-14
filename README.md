@@ -2,11 +2,13 @@
 swoole多人聊天室，功能有，设置名称，管理员登录，禁言，发送表情等。
 
 
-安装教程
-1.环境准备：
+1.安装教程
+环境准备：
 OS：Linux x86/x64（Windows 暂未测试）。
 PHP：7.0 及以上。
-Extension：Swoole,Redis。
+Extension：Swoole,Redis。    
+可参照：https://blog.csdn.net/hgb24660/article/details/108938963   。
+在宝塔里面安装swoole,Redis扩展。
 
 
 2.进入目录，编辑 server.php：
