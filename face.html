@@ -1,0 +1,35 @@
+<html>
+	<head>
+		<meta name="theme-color" content="#009688" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=11">
+		<title>Image List</title>
+		<link rel="stylesheet" href="https://cdn.zerodream.net/css/materialize.min.css">
+	</head>
+	<body>
+		<div class="container">
+			<style>.emojiList tr td img {max-width: 128px;cursor: pointer;}</style>
+			<h4>表情包</h4>
+			<p>点击对应表情，然后复制输入框的内容即可</p>
+			<input type="text" id="emojiName" style="width: 100%;text-align:center;" class="form-control" onclick="this.select()" />
+			<table class="table emojiList" style="width: 100%;text-align: center;margin-bottom: 16px;">
+			<tbody><tr>
+			<td><img src="/face/1.gif" onclick="addEmoji(this.src)" style="display: inline; opacity: 1; filter: blur(0px);"></td>
+			<td><img src="/face/2.jpg" onclick="addEmoji(this.src)" style="display: inline; opacity: 1; filter: blur(0px);"></td>
+			<td><img src="/face/3.png" onclick="addEmoji(this.src)" style="display: inline; opacity: 1; filter: blur(0px);"></td>
+			<td><img src="/face/4.jpg" onclick="addEmoji(this.src)" style="display: inline; opacity: 1; filter: blur(0px);"></td>
+			<td><img src="/face/5.png" onclick="addEmoji(this.src)" style="display: inline; opacity: 1; filter: blur(0px);"></td>
+			<td><img src="/face/6.png" onclick="addEmoji(this.src)" style="display: inline; opacity: 1; filter: blur(0px);"></td>
+			<td><img src="/face/7.png" onclick="addEmoji(this.src)" style="display: inline; opacity: 1; filter: blur(0px);"></td>
+			</tr>
+			</tbody>
+			</table>
+		</div>
+	</body>
+	<script>
+	function addEmoji(name) {
+		emojiName.value = name.replace("https://music.tql.ink/face/", "");
+	}
+	</script>
+</html>

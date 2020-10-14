@@ -1,0 +1,188 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>恭喜，站点创建成功！</title>
+    <style>
+        .livechat{
+            width: 500px;
+            margin-right: auto;
+            margin-left: auto;
+        }
+        #chatdata .sysmsg{padding:4px 12px 4px 12px;border-radius:12px;margin:4px 0px 4px 0px;display:inline-block;background:rgba(0,0,0,0.5);color:#FFF;}
+    </style>
+</head>
+<body onclick="checkElement(event)">
+    <div class="livechat">
+		<h5>实时聊天，<button onclick="loginadmin()">房管登录</button>，<span id="setusername"><button onclick="setuserNick()">设置昵称</button></span></h5>
+		<p>当前一共在线 <online id="online-user">0</online> 人</p>
+        <div id="chatdata"><button onclick="connect()" class="btn btn-primary">连接服务器</button></div>
+		<div class="input-group">
+			<input type="text" id="msginput" class="form-control input white-text" placeholder="消息内容"></input>
+			<span class="input-group-btn">
+				<button onclick="sendmsg()" id="sendmsgbtn" class="btn btn-primary full-width">发送</button>
+			</span>
+		</div>
+		<p class="actionInput">
+			<a onclick="openedEmoji=true;$(faces).fadeIn();" id="openfaces">[ 发送表情 ]</a>
+		</p>
+		<iframe src="/face.html?s=3" style="display: none;border: 0px;width: 70vw;height: 70vh;position: fixed;top: 15vh;left: 15vw;background: #F1F1F1;border: 12px solid rgba(255,255,255,0.0);border-radius: 8px;box-shadow: 0px 0px 16px rgba(0,0,0,0.8);" id="faces"></iframe>
+	</div>
+</body>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/jquery@3.5.0/dist/jquery.min.js"></script>
+<script>
+    // 配置
+	var ws_hostname = 'ws://127.0.0.1:811/';
+	
+	// 初始化变量
+	var websocket;
+	var ws_connected = false;
+	var openedEmoji = false;
+	
+    function connect(){
+        websocket = new WebSocket(ws_hostname);
+        websocket.onopen = function (event) {
+			$("#chatdata").html("");
+			ws_connected = true;
+			setInterval(function() {
+				if(ws_connected) {
+					websocket.send('{"type":"heartbeat"}');
+				}
+			}, 5000);
+			
+// 			var userNick = window.localStorage.getItem("username");
+// 			if(userNick != null && userNick != undefined) {
+			 //   $("#setusername").html("");
+				// websocket.send('{"type":"msg","data":"您的昵称是:' + userNick + '"}');
+// 			}
+		};
+		websocket.onclose = function (event) {
+			ws_connected = false;
+			console.log("服务器断开");
+			setTimeout("connect()", 5000);
+		};
+		websocket.onmessage = function (event) {
+			handle(event.data);
+		};
+		websocket.onerror = function (event, e) {
+			ws_connected = false;
+		};
+    }
+    function setuserNick(){
+        if(!ws_connected) {
+			alert("请等待服务器连接");
+			return;
+		}
+        var userNick = prompt("请输入你的网名:");
+        if (userNick != null){
+         websocket.send('{"type":"username","data":"' + userNick + '"}');
+        }else{
+         alert("你按了[取消]按钮");
+        }
+    }
+    function loginadmin(){
+        if(!ws_connected) {
+			alert("请等待服务器连接");
+			return;
+		}
+		var str = prompt("请输入你的密码:");
+        if (str != null){
+         websocket.send('{"type":"loginadmin","data":"' + str + '"}');
+        }else{
+         alert("你按了[取消]按钮");
+        }
+    }
+    // 处理消息
+	function handle(data) {
+		try {
+			var json = JSON.parse(data);
+			if(json.type != undefined) {
+				switch(json.type) {
+					case "msg":
+						print(json.data);
+						break;
+					case "online":
+						$("#online-user").html(json.data);
+						break;
+					case "setname":
+						window.localStorage.setItem("username", json.data);
+						break;
+					case "chat":
+						chat(json);
+						break;
+					default:
+						print("Unknown message type: " + json.type);
+				}
+			}
+		} catch(e) {
+			print(e.getMessage());
+		}
+	}
+    function print(msg) {
+		$("#chatdata").append("<center><span class='sysmsg'>" + msg + "</span></center>");
+		chatdata.scrollTop = chatdata.scrollHeight;
+	}
+	// 聊天内容
+	function chat(data) {
+// 		var regexp = new RegExp(/#http:..websocket.swoole.com.face.([0-9]).(jpg|png|gif)#/g);
+
+		var reg = new RegExp(/(.jpg|.png|.gif)/); //刘德华，周星驰，周润发
+		if(reg.exec(data.data)){
+            // 包含   
+		    console.log(data.data);
+		    data.data = "<img src='"+data.data+"' />";
+		  //  data.data = data.data.replace(regexp, "<img src='"+data.data+' />");
+        }
+        
+		console.log(data.data);
+
+		var randid = Math.floor(Math.random() * 10000000);
+		console.log(data);
+		$("#chatdata").append("<div class='chat chat-" + randid + " hidechat'><div class='msgbox'><small class='name'>" + data.user + "</small><div class='msg' title='" + data.time + "'>" + data.data + "</div></div></div>");
+		$(".chat-" + randid).fadeIn();
+		chatdata.scrollTop = chatdata.scrollHeight;
+	}
+	
+	// 发送聊天消息
+	function sendmsg() {
+		var message = msginput.value;
+		
+//         var reg = new RegExp(/(.jpg|.png|.gif)/);
+// 		if(reg.exec(message)){
+//             // 包含   
+// 		    message = "<img src='"+message+"' />";
+//         }
+// 		console.log(message);
+		
+		
+		if(message == "") {
+			alert("消息不能为空");
+			return;
+		}
+		if(!ws_connected) {
+			alert("请等待服务器连接");
+			return;
+		}
+		var wait_send = {
+			type: "msg",
+			data: message
+		};
+		websocket.send(JSON.stringify(wait_send));
+		msginput.value = "";
+		msginput.disabled = true;
+		sendmsgbtn.disabled = true;
+		setTimeout(function() {
+			msginput.disabled = false;
+			sendmsgbtn.disabled = false;
+			$(msginput).focus();
+		}, 3000);
+	}
+	// 关闭窗口
+	function checkElement(event) {
+		if(openedEmoji && event.target != faces && event.target != openfaces) {
+			$(faces).fadeOut();
+			openedEmoji = false;
+		}
+	}
+</script>
+</html>
